@@ -6,10 +6,12 @@ namespace DigitalBank.Core.Contracts
     {
         decimal Balance { get; }
         ulong Number { get; }
-        string OwnerFirstName { get; set; }
-        string OwnerLastName { get; set; }
+        Owner Owner { get; set; }
+        string Summary { get; }
         List<Transaction> Transactions { get; set; }
+
         bool Deposit(Amount amount, string note);
+
         bool Withdraw(Amount amount, string note);
     }
 }

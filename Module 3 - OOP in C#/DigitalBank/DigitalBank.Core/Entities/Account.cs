@@ -2,11 +2,11 @@
 
 namespace DigitalBank.Core.Entities
 {
-    public class Account : IAccount
+    public abstract class Account : IAccount
     {
-        public ulong Number { get; private set; }
-        public string OwnerFirstName { get; set; } = string.Empty;
-        public string OwnerLastName { get; set; } = string.Empty;
+        public ulong Number { get; protected set; }
+        public Owner Owner { get; set; }
+
         public decimal Balance
         {
             get
@@ -14,22 +14,16 @@ namespace DigitalBank.Core.Entities
                 return _balance;
             }
         }
-        private decimal _balance;
-        private static ulong s_accountNumberSeed = 1000000000000000;
+
+        public abstract string Summary { get; }
+        protected decimal _balance;
         public List<Transaction> Transactions { get; set; } = new List<Transaction>();
 
-        public Account(Amount amount, string firstName, string lastName)
+        public Account(Owner owner)
         {
-            if (amount.Value < 500)
-            {
-                throw new ArgumentOutOfRangeException(nameof(amount), "Opening balance needs to be 500 or more.");
-            }
-            this.Number = s_accountNumberSeed;
-            OwnerFirstName = firstName;
-            OwnerLastName = lastName;
-            Deposit(amount, "Opening Balance");
-            s_accountNumberSeed++;
+            Owner = owner;
         }
+
         public bool Deposit(Amount amount, string note)
         {
             if (amount.Value <= 0)
@@ -41,7 +35,8 @@ namespace DigitalBank.Core.Entities
             Transactions.Add(new Transaction(amount, note, TransactionType.Credit));
             return true;
         }
-        public bool Withdraw(Amount amount, string note)
+
+        public virtual bool Withdraw(Amount amount, string note)
         {
             if (amount.Value <= 0)
             {

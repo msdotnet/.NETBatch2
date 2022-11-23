@@ -1,14 +1,14 @@
-﻿using DigitalBank.Core.Contracts;
-using DigitalBank.Core.Entities;
+﻿using DigitalBank.Core.Entities;
 
 namespace DigitalBank.Services
 {
-    class AccountService
+    internal class SavingAccountService
     {
-        internal readonly IAccount _account;
-        internal AccountService()
+        internal readonly Account _account;
+
+        internal SavingAccountService()
         {
-            Console.Write("To open a bank account, please enter your first name: ");
+            Console.Write("To open a saving account, please enter your first name: ");
             var firstName = Console.ReadLine();
             Console.Write("Please enter your last name: ");
             var lastName = Console.ReadLine();
@@ -17,7 +17,7 @@ namespace DigitalBank.Services
             var initialAmount = Convert.ToDecimal(Console.ReadLine());
             try
             {
-                _account = new Account(new Amount() { Value = initialAmount, Currency = Currency.INR }, firstName, lastName);
+                _account = new SavingAccount(new Amount() { Value = initialAmount, Currency = Currency.INR }, new Owner(firstName, lastName));
                 Console.WriteLine($"\nCongratulations on opening an account with us with an opening balance of {_account.Balance}.");
             }
             catch (ArgumentOutOfRangeException ex)
@@ -25,10 +25,11 @@ namespace DigitalBank.Services
                 Console.WriteLine(ex.Message);
                 goto InitialAmount;
             }
+            Console.WriteLine($"\nAccount Summary:\n{_account.Summary}");
         }
+
         internal void Deposit()
         {
-
             Console.Write("Please provide deposit amount: ");
             var depositAmount = Convert.ToDecimal(Console.ReadLine());
             Console.Write("Deposit note: ");
@@ -46,11 +47,11 @@ namespace DigitalBank.Services
                 goto Deposit;
             }
 
-            Console.WriteLine($"New Balance after deposit: {_account.Balance}");
+            Console.WriteLine($"\n{_account.Summary}");
         }
+
         internal void Withdraw()
         {
-
             Console.Write("Please provide withdrawal amount: ");
             var withdrawalAmount = Convert.ToDecimal(Console.ReadLine());
             Console.Write("Withdrawal note: ");
@@ -74,7 +75,7 @@ namespace DigitalBank.Services
                 withdrawalAmount = Convert.ToDecimal(Console.ReadLine());
                 goto Withdraw;
             }
-            Console.WriteLine($"Remaining Balance after withdrawal: {_account.Balance}");
+            Console.WriteLine($"\n{_account.Summary}");
         }
     }
 }
